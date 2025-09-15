@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nick de Greef — Portfolio</title>
+  <meta name="description" content="Computer Engineering portfolio: embedded systems, FPGA, OS, and projects." />
+
+  <style>
+    /*
+      ============================
+      THEME & GLOBAL STYLES (CSS)
+      ============================
+    */
+    :root {
+      --bg: #0b0d10;        /* Page background */
+      --panel: #11151a;     /* Panels (cards/sections) */
+      --muted: #8aa0b3;     /* Secondary text */
+      --text: #e8eef4;      /* Main text color */
+      --accent: #4cc9f0;    /* Primary accent (links/buttons) */
+      --accent-2: #e9e9e9;  /* Secondary accent (used in avatar ring) */
+      --card: #0f1318;      /* Project cards */
+      --chip: #17202a;      /* Small chip backgrounds */
+      --ring: #223043;      /* Subtle borders */
+    }
+
+    /*
+      Light mode override — the browser applies this automatically when the OS
+      is set to light theme.
+    */
+    /*
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7f9fb; --panel: #ffffff; --muted: #5b6b79; --text: #0c1116;
+        --accent: #2563eb; --accent-2: #059669; --card: #ffffff; --chip:#eff3f7; --ring:#e6eef6;
+      }
+    }
+    */
+
+    /* Reset/Global rules to keep layout tidy */
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+      font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* A centered max-width wrapper so content doesn’t stretch too wide on big screens */
+    .container{max-width:1100px;margin:0 auto;padding:28px 20px}
+
+    /* ==================
+       HEADER (Hero area)
+       ==================
+       Grid with two columns: avatar (left) and text/button stack (right).
+    */
+    header.hero{display:grid;grid-template-columns:180px 1fr;gap:22px;align-items:center;padding:22px 0}
+
+    /* Round avatar circle. Has option for ND or picture */
+  .avatar {
+    width:180px;
+    height:180px;
+    border-radius:50%;
+    background:linear-gradient(45deg,var(--accent),var(--accent-2));
+    padding:3px;
+    overflow:hidden; /* hides overflow, makes the circle mask work */
+  }
+
+  .avatar img {
+    width:100%;
+    height:100%;
+    object-fit:cover;   /* keeps proportions, fills circle */
+    border-radius:50%;
+  }
+
+
+    /* Headline text sizing using clamp() for nice responsive scaling */
+    .headline h1{margin:0 0 6px;font-size:clamp(28px,4.2vw,42px);letter-spacing:.2px}
+    .headline p{margin:0;color:var(--muted)}
+
+    /* Small “chips” for quick links / metadata */
+    .quick{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    .chip{background:var(--chip);border:1px solid var(--ring);color:var(--text);
+      padding:6px 10px;border-radius:999px;font-size:13px}
+
+    /* Call-to-action buttons */
+    .cta{margin-top:16px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn{display:inline-block;border:1px solid var(--ring);background:var(--panel);
+      padding:10px 14px;border-radius:10px}
+    .btn.primary{background:var(--accent);color:#051018;border-color:transparent}
+
+    /* Shared section/panel styles */
+    section{margin:34px 0}
+    section h2{margin:0 0 12px;font-size:22px}
+    .panel{background:var(--panel);border:1px solid var(--ring);border-radius:14px;padding:18px}
+
+    /* ==================
+       BIO LAYOUT
+       ==================
+       Two columns on desktop; collapses to one column on smaller screens.
+    */
+    .bio{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+    .bio p{margin:0 0 10px;color:var(--text)}
+    .meta{display:flex;flex-wrap:wrap;gap:10px}
+
+    /* ==================
+       PROJECT GRID
+       ==================
+       3 columns on large screens, 2 on tablets, 1 on phones.
+    */
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    @media (max-width:980px){.grid{grid-template-columns:repeat(2,1fr)} .bio{grid-template-columns:1fr}}
+    @media (max-width:640px){.grid{grid-template-columns:1fr}}
+
+    .card{background:var(--card);border:1px solid var(--ring);border-radius:14px;padding:16px;
+      display:flex;flex-direction:column;gap:10px}
+    .card h3{margin:0;font-size:18px}
+    .tags{display:flex;flex-wrap:wrap;gap:8px}
+    .tag{font-size:12px;background:var(--chip);border:1px solid var(--ring);padding:4px 8px;border-radius:999px;color:var(--muted)}
+    .card .desc{color:var(--text)}
+    .card .links{margin-top:auto;display:flex;gap:12px;flex-wrap:wrap}
+
+    /* ==================
+       EXPERIENCE TIMELINE
+       ==================
+       A simple vertical line with dot markers for each item.
+    */
+    .timeline{position:relative;margin-left:4px}
+    .timeline::before{content:"";position:absolute;left:10px;top:0;bottom:0;width:2px;background:var(--ring)}
+    .t-item{position:relative;padding-left:30px;margin:14px 0}
+    .t-item::before{content:"";position:absolute;left:4px;top:8px;width:14px;height:14px;border-radius:50%;background:var(--accent)}
+    .t-item h4{margin:0;font-size:16px}
+    .t-item .when{color:var(--muted);font-size:13px}
+
+    /* ==================
+       SKILLS GRID
+       ==================
+       Three columns -> two -> one as screen narrows.
+    */
+    .skills{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    @media (max-width:820px){.skills{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:560px){.skills{grid-template-columns:1fr}}
+    .skill-group{background:var(--card);border:1px solid var(--ring);border-radius:12px;padding:12px}
+    .skill-group h4{margin:0 0 8px;font-size:15px}
+
+    /* Footer */
+    footer{margin:40px 0 10px;color:var(--muted);font-size:14px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- ===============================
+         HERO (top of the page)
+         Replace text with your info. The chips are quick links / metadata.
+    ================================ -->
+    <header class="hero" id="top">
+      <!-- You can swap this avatar block for an <img src="me.jpg" alt="Nick" class="avatar"> -->
+      <div class="avatar">
+        <img src="avatar.jpg" alt="Nick">
+      </div>
+      <div class="headline">
+        <h1>Nick de Greef</h1>
+        <p>Computer Engineering Student • Electrical - Embedded Systems - Programming </p>
+        <div class="quick">
+          <span class="chip">📍 Long Beach & Ventura, CA</span>
+          <span class="chip">🎓 Bachelor of Science Spring 2026</span>
+
+        </div>
+        <div class="cta">
+          <!-- Buttons use anchor links to jump to sections -->
+          <a class="btn" href="#projects">View Projects</a>
+          <a class="btn" href="#experience">Experience</a>
+          <a class="btn" href="#contact">Contact</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===============================
+         BIO / ABOUT SECTION
+         Left column: paragraph text; Right column: quick facts + downloads.
+         Tip: Keep paragraphs short for readability.
+    ================================ -->
+    <section id="bio">
+      <h2>About / Bio</h2>
+      <div class="panel bio">
+        <div>
+          <p>I’m a computer engineering student graduating this spring with a passion for computers, math, and problem-solving.
+             I enjoy exploring the connection between hardware and software, whether it’s working with circuits, coding, or seeing how digital systems interact with the physical world.
+             My background in programming, combined with a hands-on approach to hardware, drives my excitement to keep growing and exploring new technology.            
+          </p>
+          <p>
+            I’m eager to begin my career and gain experience across the spectrum from electrical work to software development.
+             I’m confident in the skills I’ve developed during my studies and motivated to put them to work in meaningful, impactful projects.
+          </p>
+          <div class="meta">
+            <span class="chip">Looking for: Electrical, Embedded, and Programming internships</span>
+          </div>
+        </div>
+        <div>
+            <div class="skill-group">
+            <h4>Programming Languages</h4>
+            <div class="tags">
+                <span class="tag">C</span>
+                <span class="tag">C++</span>
+                <span class="tag">MATLAB</span>
+                <span class="tag">HTML</span>
+                <span class="tag">Python</span>
+            </div>
+            </div>
+
+            <div class="skill-group" style="margin-top:10px">
+            <h4>Tools & Programs</h4>
+            <div class="tags">
+                <span class="tag">Git</span>
+                <span class="tag">Altium</span>
+                <span class="tag">LTSpice</span>
+                <span class="tag">Verilog</span>
+                <span class="tag">Linux</span>
+            </div>
+            </div>
+
+            <div class="skill-group" style="margin-top:10px">
+            <h4>Hardware Skills</h4>
+            <div class="tags">
+                <span class="tag">PCB Design</span>
+                <span class="tag">Circuit Analysis</span>
+                <span class="tag">Power Supply</span>
+            </div>
+            </div>
+
+            <div class="skill-group" style="margin-top:10px">
+            <h4>Soft Skills</h4>
+            <div class="tags">
+                <span class="tag">Leadership</span>
+                <span class="tag">Problem-Solving</span>
+                <span class="tag">Communication</span>
+                <span class="tag">Project Planning</span>
+            </div>
+            </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===============================
+         FEATURED PROJECTS
+         - Each project is an <article class="card">.
+         - Edit title <h3>, description <p class="desc">, tags, and links.
+         - “Sub‑page” link is a placeholder you can wire to a future HTML file
+           (e.g., projects/fpga-synth.html).
+    ================================ -->
+    <section id="projects">
+      <h2>Featured Projects</h2>
+      <div class="grid">
+        <!-- Project 1 -->
+        <article class="card">
+          <h3>Smart Car and Garage</h3>
+          <p class="desc">Pre programmed car that comes out of garage, follows a route, comes back and parks itself. IR sensors on garage detect when the car arrives/leaves and opens/closes the door.</p>
+          <div class="tags">
+            <span class="tag">TM4C</span>
+            <span class="tag">Stepper Motor PWM</span>
+            <span class="tag">C</span>
+            <span class="tag">IR & Ultrasonic Sensors</span>
+            <span class="tag">Voltage Regulator</span>
+          </div>
+          <div class="links">
+            <a href="SmartHomeCar.pdf">Report</a>
+            <a href="SmartHomeCar.mp4">Video</a>
+          </div>
+        </article>
+
+        <!-- Project 2 -->
+        <article class="card">
+          <h3>Midi Music Production Equipment</h3>
+          <p class="desc">This is my senior project that I am currently working on. It's based on the Raspberry Pico2 and is a functional drum pad/eight channel mixer for music production. It uses UART to send MIDI signals between MCUs and format large data matrixes for a digital audio workstation.</p>
+          <div class="tags">
+            <span class="tag">MicroPython</span>
+            <span class="tag">Raspberry Pico2</span>
+            <span class="tag">UART/MIDI</span>
+            <span class="tag">PCB Design</span>
+          </div>
+        </article>
+
+        <!-- Project 3 -->
+        <article class="card">
+          <h3>Mock-Banking Menu in C++</h3>
+          <p class="desc">This project is from my introduction to data structures in C++ class. I collaberated with groupmates to make a pretend bank menu where the user could generate statements, validate credit card numbers, and cleanly navigate options.</p>
+          <div class="tags">
+            <span class="tag">C++</span>
+            <span class="tag">Data Structures</span>
+            <span class="tag">Git Collaberation</span>
+          </div>
+          <div class="links">
+            <a href="BankProject.zip">Project Zip</a>
+          </div>
+        </article>
+
+        <!-- Project 4 -->
+        <article class="card">
+          <h3>Gyroscope Color Sensor</h3>
+          <p class="desc">Experimenting with taking real world inputs, interpretting them and making real world outputs with different technologies. The start of information flow begins when the user moves the gyroscope. A servo motor with 3 colors attached to the end will imitate the user's movement. A color sensor will read which color the servo motor put in front of it and the LCD will display that color.</p>
+          <div class="tags">
+            <span class="tag">TM4C</span>
+            <span class="tag">C</span>
+            <span class="tag">Gyroscope</span>
+            <span class="tag">LCD</span>
+            <span class="tag">Color Sensor</span>
+          </div>
+          <div class="links">
+            <a href="GryoColorSensor.pdf">Report</a>
+            <a href="GryoColorSense.mov">Video</a>
+          </div>
+        </article>
+
+        <!-- Project 5 -->
+        <article class="card">
+          <h3>Operating System Semaphore and Shared Memory</h3>
+          <p class="desc">In my operating systems class we were given a file that we had to send/receieve signals to and from to progress in a 'dungeon.' It required understanding of operating system principles such as semaphores and shared resources. I also needed to be comfortable running linux on a virtual machine and using the built in manuals to teach myself commands.</p>
+          <div class="tags">
+            <span class="tag">Linux</span>
+            <span class="tag">Virual Machines</span>
+            <span class="tag">Operating Systems</span>
+          </div>
+          <div class="links">
+            <a href="OSLabRepository.zip">GitHub Repository</a>
+          </div>
+        </article>
+
+        <!-- Project 6 -->
+        <article class="card">
+          <h3>JSON Weather Quester</h3>
+          <p class="desc">This project features a Wifi module expander for the TM4C MCU. We used it to create a client-server connection socket from our micro controller, receieve JSON information regarding the weather from the requested city, parse that information, and output it for the user on a color LCD.</p>
+          <div class="tags">
+            <span class="tag">Wi-Fi</span>
+            <span class="tag">JSON Parsing</span>
+            <span class="tag">SPI Communication</span>
+          </div>
+          <div class="links">
+            <a href="WeatherQuest.pdf">Report</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===============================
+         EXPERIENCE (TIMELINE)
+         Add more .t-item blocks as needed. Keep bullets short and impactful.
+    ================================ -->
+    <section id="experience">
+      <h2>Experience</h2>
+      <div class="panel timeline">
+        <div class="t-item">
+          <h4>Boat Maintinence Diver — Boat M.D.</h4>
+          <div class="when">October 2023 - Present</div>
+          <p>In my most recent job, I performed many different types of maintinence for boats in the Long Beach harbors. Starting with routine cleaning, I learned how BMS, pumps, engines, and more work on boats. This job developed strong problem solving skills for me as saltwater damaged not only the boats I fixed, but the equipment I used to fix them.</p>
+        </div>
+        <div class="t-item">
+          <h4>Assistant Lead Ocean Lifeguard - Port Hueneme Lifeguarding Association</h4>
+          <div class="when">May 2021 - August 2024</div>
+          <p>I spent four summers as a lifeguard at my local beach. One of those summers I stepped up to a managerial position, as assistant lead. This taught me a lot about working in teams, coordinating with peers, and communicating in high stress situations. </p>
+        </div>
+        <div class="t-item">
+          <h4>Clerk — Plant Patent Agent</h4>
+          <div class="when">July 2020 - January  2021</div>
+          <p>When covid hit during my junior year of high school, I worked as a clerk for Plant Patent Agent. Most of my responsibilities were cross checking documents for errors or discrepencies. Those attention to detail skills have helped me with coding and other areas of engineering to this day.  </p>
+        </div>        
+      </div>
+    </section>
+
+
+
+    <!-- ===============================
+         CONTACT
+         Swap the # links with your real profiles.
+    ================================ -->
+<section id="contact">
+  <h2>Contact</h2>
+  <div class="panel">
+    <!-- Contact info grid -->
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; text-align:center; gap:10px; margin-bottom:12px;">
+      <div>
+        <strong>Address</strong><br>
+        2312 Stanbridge Ave.<br>
+        Long Beach, CA 90815
+      </div>
+      <div>
+        <strong>Email</strong><br>
+        <a href="mailto:Nicolas@deGreef.us">Nicolas@deGreef.us</a>
+      </div>
+      <div>
+        <strong>Phone</strong><br>
+        (805) 270-9184
+      </div>
+    </div>
+
+</section>
+
+
